@@ -1,0 +1,27 @@
+name: Create LaTeX PDF
+
+on: workflow_dispatch 
+
+jobs:
+    Build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Compile
+              uses: xu-cheng/latex-action@v2
+              with:
+                root_file: ./franke-report-query-segmentation/franke-report-query-segmentation-paper/franke-report-query-segmentation.tex
+
+            - name: Generate release tag
+              run: echo "release_tag=Build_$(date +"%Y.%m.%d_%Hh%Mmin")" >> "$GITHUB_ENV"
+
+            - name: Release
+              uses: softprops/action-gh-release@v1
+              with:
+                files: franke-report-query-segmentation.pdf
+                tag_name: ${{ env.release_tag }}              
+              if: ${{ github.ref == 'refs/heads/main' }}
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
