@@ -1,0 +1,42 @@
+\documentclass[sigconf]{acmart}
+
+% A4 instead of letter paper
+\geometry{a4paper}
+
+\usepackage[german,american]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc} % For umlauts (OT1) and the ß (OT1, T1).
+\usepackage{times}
+
+\usepackage{booktabs} % More formal table style.
+
+% ACM style ``tweaking''
+\settopmatter{printacmref=false}                   % Removes citation information below abstract; but causes a warning when compiling a document with more than one page
+\renewcommand\footnotetextcopyrightpermission[1]{} % Removes footnote with conference information in first column
+\pagestyle{plain}                                  % Removes running headers
+
+% Figures
+\DeclareGraphicsRule{.ai}{pdf}{*}{}% Handle .ai files as .pdf files.
+\DeclareGraphicsExtensions{.pdf,.ai,.jpg,.png}
+\pdfpagebox 5% Use ArtBox instead MediaBox. 1=MediaBox, 2=CropBox, 3=BleedBox, 4=TrimBox, 5=ArtBox. (shell: pdfinfo -box <pdf-file>)
+\setkeys{Gin}{pagebox=artbox}% Alternative (necessary for newer tex versions) for \pdfpagebox 5 in preceding line.
+\graphicspath{{../franke-report-query-segmentation-figures/}}
+
+
+\acmConference[Seminar IR]{Seminar ``Information Retrieval''}{Winter term 2024/25}{Jena, Germany} 
+
+
+\begin{document}
+
+\input{franke-report-query-segmentation-pre}
+\input{franke-report-query-segmentation-part1}
+\input{franke-report-query-segmentation-part2}
+\input{franke-report-query-segmentation-part3}
+\input{franke-report-query-segmentation-part4}
+\input{franke-report-query-segmentation-part5}
+\input{franke-report-query-segmentation-sum}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{franke-report-query-segmentation.bib}
+
+\end{document}
