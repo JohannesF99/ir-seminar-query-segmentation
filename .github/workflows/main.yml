@@ -12,7 +12,7 @@ jobs:
             - name: Compile
               uses: xu-cheng/latex-action@v2
               with:
-                root_file: franke-report-query-segmentation.tex
+                root_file: franke-report-query-segmentation/franke-report-query-segmentation-paper/franke-report-query-segmentation.tex
 
             - name: Generate release tag
               run: echo "release_tag=Build_$(date +"%Y.%m.%d_%Hh%Mmin")" >> "$GITHUB_ENV"
