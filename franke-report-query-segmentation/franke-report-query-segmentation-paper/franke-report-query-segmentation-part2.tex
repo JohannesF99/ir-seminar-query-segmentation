@@ -1,5 +1,21 @@
-\section{Approach 1} \label{approach1}  % Change title accordingly
+\section{connexity score segmentation} \label{approach1}
 
-Describe some potential approach in this section.
+\paragraph{content}
+\begin{enumerate}
+\item introduction
+\item mining logs and corpora
+\item query segmentation
+\item conclusion / outlook
+\end{enumerate}
 
-\paragraph{Blindtext} This is some text without a meaning. It is just meant to fill some space. If you read this text, you will get no information. Really? Is there no information? Is there really no difference between this text and some nonsense like ``cofeve''? Not at all! A blind text like this gives you information about the selected font, how the letters are written, and an impression of the look and feel. This text should contain all letters of the alphabet and it should be written in the original language. There is no need for special contents, but the length of words should match the language.
+\paragraph{declared functin for connexity score computation}
+\begin{align*}
+conn(S) &= freq(S) \cdot I(w_1...w_{n-1},w_2...w_n)
+\end{align*}
+
+\paragraph{result table}
+see table \ref{table-connexity-score-risvik-2003}\\
+see table \ref{table-token-segments-risvik-2003}
+
+\input{table-connexity-score-risvik-2003}
+\input{table-token-segments-risvik-2003}
