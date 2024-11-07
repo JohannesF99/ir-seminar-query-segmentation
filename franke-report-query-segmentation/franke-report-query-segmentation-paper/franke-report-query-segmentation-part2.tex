@@ -1,21 +1,53 @@
 \section{connexity score segmentation} \label{approach1}
 
-\paragraph{content}
-\begin{enumerate}
-\item introduction
-\item mining logs and corpora
-\item query segmentation
-\item conclusion / outlook
-\end{enumerate}
-
-\paragraph{declared functin for connexity score computation}
-\begin{align*}
-conn(S) &= freq(S) \cdot I(w_1...w_{n-1},w_2...w_n)
-\end{align*}
-
 \paragraph{result table}
 see table \ref{table-connexity-score-risvik-2003}\\
 see table \ref{table-token-segments-risvik-2003}
 
 \input{table-connexity-score-risvik-2003}
 \input{table-token-segments-risvik-2003}
+
+\paragraph*{Introduction}
+In the field of Information Retrieval, search engines rely heavily on efficient query processing to return relevant results. One core component in IR is the inverted index, which maps words to the documents in which they appear, enabling rapid retrieval based on query terms. However, handling complex queries with multiple words and ambiguous phrases remains challenging. Several common techniques in IR, such as Named Entity Recognition and Stopword Removal, serve to refine user queries by identifying entities like names and places, or by filtering out non-essential words, respectively. Collectively, these techniques are part of what is known as query rewriting.
+
+Most query rewriting strategies employ a "leftmost" approach, which prioritizes the leftmost elements of a query string to determine possible segmentations. While effective in straightforward cases, this approach struggles with ambiguities in user queries, particularly when alternative interpretations or rephrasings exist. To address these limitations, we introduce a novel method called connexity. This approach leverages data mining techniques on both query logs and document corpora to achieve more nuanced query segmentation, capable of distinguishing contextually meaningful phrases and producing better-organized search results.
+
+\paragraph*{Mining Logs and Corpora}
+Query logs are instrumental for identifying meaningful, indivisible phrases in multiword queries. 
+Here, we define a "meaningful sequence" $S = \{w_1,w_2,...,w_n\}$ as a sequence that satisfies two conditions:
+\begin{enumerate}
+\item[1.] It appears frequently enough within the logs.
+\item[2.] It has a high transinformation score, indicating a strong associative relationship between adjacent terms.
+\end{enumerate}
+
+Based on these conditions, we propose a connexity measure defined as:
+\begin{align*}
+conn(S) &= freq(S) \cdot I(w_1...w_{n-1},w_2...w_n)
+\end{align*}
+where $freq(S)$ is the frequency of sequence $S$, and $I$ is the transinformation between consecutive terms in $S$. This metric allows us to quantify the internal cohesion of phrases, thus distinguishing significant phrases from incidental word combinations.
+
+The specific query log corpus used in this study is not clearly identified, but it likely originates from Alltheweb.com's internal logs, managed by FAST Search \& Transfer, which was later acquired by Microsoft. Initially, this dataset comprised 600 million entries, which were normalized to around 105 million entries. Within this corpus, approximately $|S_{1234}| \approx 144 \cdot 10^6$ unique n-grams (combinations of consecutive words) were identified. Due to the vast data size, further filtering was necessary using two selection rules:
+\begin{enumerate}
+\item[1.] $freq(S) \ge 5$, with $S \in |S_{1234}|$
+\item[2.] $conn(S) > t$, where $t$ is a fixed threshold (value not disclosed in the study).
+\end{enumerate}
+
+The final result set contained approximately $|S'_{1234}| \approx 12.5 \cdot 10^6$ entries. To enhance processing speed, both segment strings and connexity values were precomputed and stored, enabling 25.000 segments per second to be processed. However, due to database limitations, individual entries could not be updated selectively, necessitating a full rebuild of the database, which takes about three hours, a process that can be run daily.
+
+In an alternative approach, the study also briefly considered using Mutual Information derived from document content rather than query logs. However, the main focus remained on query-based mining due to its direct relevance to user intent.
+
+\paragraph*{Query Segmentation}
+The segmentation of queries begins by identifying all relevant subsequences within the query that exist in the database and applying the connexity measure. A valid segmentation $segm(S)$ consists of a series of non-overlapping segments that cover the entire query. For each segmentation, a score $score(segm(S))$ is calculated as:
+\begin{align*}
+score(segm(S)) &= \sum conn(S) \text{, with } S \in S'_{1234} \text{ and } |S| \ge 2
+\end{align*}
+This scoring enables ranking of segmentations, where higher scores indicate segmentations with greater internal coherence.
+
+Interestingly, the process of query mining and segmentation is self-referential; improvements in query segmentation lead to higher-quality query logs, which subsequently refine connexity values and further enhance segmentation. This feedback loop allows the system to iteratively optimize segmentation quality over time.
+
+The authors assume that most multiword queries can be completely segmented without leaving isolated single-word terms at the end. Additionally, they discuss how connexity interacts with proximity, ensuring that higher connexity scores also imply penalties for terms spread farther apart within a document. This mechanism ensures that documents where terms appear in close proximity are favored in search results, enhancing relevance.
+
+\paragraph*{Conclusion}
+In conclusion, this approach to query segmentation demonstrates a promising increase in search quality by leveraging connexity measures derived from mined query logs. Although the query log corpus was not explicitly named earlier, it is clarified in this section, albeit too late for clear reproducibility. The authors claim that their approach yields a "significant increase in search quality," though no formal evaluation metrics or test results are provided.
+
+Looking ahead, further improvements in feature engineering could make connexity even more effective, potentially refining the segmentation process and enhancing the IR system's ability to parse and interpret complex queries.
