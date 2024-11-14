@@ -1,0 +1,23 @@
+\begin{table*}[t]
+ \caption{Segmentation performance in percent (\%) based on the proposed method by \citet{Bergsma:2007}}
+ \label{table-segmentation-performance-bergsma-2007}
+ \centering
+ \small
+ \begin{tabular}{@{}llcccc@{}}
+  \toprule
+  \multirow{2}{*}{Feature Type} & \multirow{2}{*}{Feature Span} & \multicolumn{2}{c}{Test Set} & \multicolumn{2}{c}{Intersection Set} \\
+  && Seg-Acc & Qry-Acc & Seg-Acc & Qry-Acc\\
+  \midrule
+  \midrule
+  MI & Decision-Boundary & 68.0 & 26.6 & 73.8 & 34.7\\
+  \midrule
+  Basic & Decision-Boundary & 71.7 & 29.2 & 77.6 & 39.7\\
+  Basic & Decision-Boundary, Context & 80.2 & 52.0 & 85.6 & 62.1\\
+  Basic & Decision-Boundary, Context, Dependency & 81.1 & 53.2 & 86.2 & 64.8\\
+  \midrule
+  All & Decision-Boundary & 84.3 & 57.8 & 86.6 & 63.5\\
+  All & Decision-Boundary, Context & 86.3 & 63.8 & 89.2 & 71.7\\
+  All & Decision-Boundary, Context, Dependency & 85.8 & 61.0 & 88.7 & 69.4\\
+  \bottomrule
+ \end{tabular}
+\end{table*}
