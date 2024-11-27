@@ -12,3 +12,54 @@ Table \ref{table-segmentation-performance-bergsma-2007}\\
 \cite{Keller:2003}
 \cite{Lauer:1995}
 \cite{Nicholson:2005}
+
+\begin{align*}
+MI(x_{L0},x_{R0}) &= \log \frac{Pr(x_{L0}x_{R0})}{Pr(x_{L0}) \cdot Pr(x_{R0})} \\
+&\Leftrightarrow \log C(x_{L0}x_{R0}) + \log K - \log C(x_{L0}) - \log C(x_{R0})
+\end{align*}
+\todo{explain mutual information a little bit}
+
+\paragraph*{Introduction}
+The process of search query interpretation follows a structured pipeline: a token sequence is input, interpreted semantically, and used to retrieve documents. Modern search engines aim to balance broad retrieval with relevance, retrieving documents about the query topic but allowing for additional terms. Queries in natural language, however, pose challenges: tokens rarely stand alone but are embedded in syntactic and semantic relationships. For instance, the order of tokens affects results - a phenomenon observable through practical experiments with search engines.
+
+Segmentation, the task of identifying semantic relationships between query tokens, plays a vital role in improving search outcomes. Quotation marks, for example, enforce segmentation by treating tokens as a single semantic unit. Applications of segmentation include efficient retrieval, so relevant documents can be located faster, and reducing noise, so poorly matched documents are filtered out. Segmentation is also employed in query substitution and query expansion to refine search intent (Jones et al., 2006). In this paper, we focus on a data-driven approach using a supervised machine learning (ML) model for query segmentation. Unlike prior approaches relying on averaged feature weights or votes, our method leverages a flexible discriminative framework for classification at each token boundary.
+
+\paragraph*{Related Work}
+Early efforts by Risvik et al. (2003) pioneered query segmentation, while research on noun compound (NC) bracketing contributed significantly to syntactic and semantic segmentation (Nakov \& Hearst, 2005a). NC bracketing treats multi-word expressions as binary trees and focuses on determining relationships in three-token compounds (Lauer, 1995), which yield four possible bracketings. Simple segmentation, treating each word as a segment, is often the default fallback.
+
+Web-derived features, as introduced by Keller and Lapata (2003), provide a robust alternative to corpus-based counts. Features include co-occurrence counts (e.g., "w's x" or "wx" in text) (Nakov \& Hearst, 2005), and lexical patterns involving determiners (e.g., "the w x") (Nicholson \& Baldwin, 2006). Modern segmentation models also examine context beyond simple n-grams (Girju et al., 2005), integrating syntactic and semantic insights for NC interpretation. This shift enhances segmentation accuracy by capturing nuanced relationships between query tokens.
+
+\paragraph*{Methodology}
+\subparagraph*{\textbf{Segmentation as Classification Task}}
+We define query segmentation as a mapping $S: x \to y$, where $x$ is a query of $N$ tokens with segmentation $y$ selected from $Y_N$, the set of all possible segmentations with cardinality $|Y_N| = 2^{N-1}$. Using supervised learning, the model learns the optimal segmentation $\hat{y}$ by maximizing the score:
+\begin{align*}
+	\hat{y} &= argmax_y(Score_w(x,y)).
+\end{align*}
+Here $Score_w(x,y) = w \cdot \Psi(x,y)$, where $\Psi(x,y)$ denotes features extracted from the query and segmentation. We implemented this using Support Vector Machines (SVMs) (Joachims, 2002). While alternative models like Hidden Markov SVMs (Altun et al., 2003) were tested, traditional SVMs outperformed them. The segmentation pipeline evaluates $N-1$ potential breakpoints in a query of length $N$, based on token-local features.
+
+\subparagraph*{\textbf{Features}}
+Decision Boundary Features focus on individual token pairs, including:
+\begin{enumerate}
+\item[a)] Indicator features: Derived from part-of-speech (POS) tags, such as "DT JJ" (determiner-adjective). Words like "free" often behave as standalone left segments (e.g., "sugar-free").
+\item[b)] Statistical features: Mutual information (MI) (Church \& Hanks, 1989) adapted for web-scale counts. Alternative features like query frequency (Qcount) in a database improve segmentation by 4\%.
+\end{enumerate}
+Context Features expand decision boundaries by incorporating nearby tokens (e.g., $x_{L2}, x_{L1}, x_{L0}, x_{R0}, x_{R1}, x_{R2}$). These features account for interactions between adjacent breakpoints, enhancing segmentation quality.
+Dependency Features capture inter-token dependencies (e.g.,$x_{L0},x_{R1}$), though longer-range interactions proved less effective.
+
+\paragraph*{Experimental Setup}
+We used the AOL Search Query Log (Pass et al., 2006), focusing on queries associated with user clicks for reliable relevance signals. After filtering, the dataset included 1,500 queries (500 for each of training, validation, and testing). Ground truth was annotated manually, yielding moderate agreement ($\kappa=0.69$) and highlighting the challenge of query ambiguity.
+
+4.2 Evaluation
+Metrics included segmentation accuracy (Seg-Acc) and query-level accuracy (Qry-Acc). We employed McNemar's test with $p<0.05$ to assess significance.
+
+\paragraph*{Results}
+Our model outperformed baselines:
+\begin{enumerate}
+\item[1)] Naive Baseline 1 (always split): 44.8\% Seg-Acc, 4.2\% Qry-Acc.
+\item[2)] Naive Baseline 2 (never split): 55.2\% Seg-Acc, 4.0\% Qry-Acc.
+\item[3)] State-of-the-Art Baseline (MI): 68\% Seg-Acc, 26.6\% Qry-Acc.
+\end{enumerate}
+By optimizing feature weights through SVMs, our method achieved significant improvements, despite the moderate inter-annotator agreement in ground truth.
+
+\paragraph*{Conclusion}
+This study demonstrated the efficacy of a data-driven supervised approach to query segmentation. By leveraging discriminative features and context-aware models, the proposed method surpasses traditional MI-based baselines, enhancing search relevance and efficiency. Future work will explore deeper semantic representations and scaling for larger datasets.
