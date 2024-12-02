@@ -1,4 +1,4 @@
-\section{segmentation classification using SVMs} \label{approach2}
+\section{segmentation classification using support vector models} \label{approach2}
 
 \paragraph*{Introduction}
 After the discussion on the early segmentation approach using connexity scores defined by \citeauthor{Risvik:2003}, this chapter is used to introduce yet another approach for query segmentation by \citeauthor{Bergsma:2007}. Similar to \citeauthor{Risvik:2003}, \citeauthor{Bergsma:2007} start with the definition of query interpretation in general. When a query, defined as a sequence of tokens, is put into a search engine, it undergoes the known process of interpretation and document retrieval, often resulting in documents relevant to the topics but containing additional unrelated words. The user input is often expressed in natural language. Because of that, the query tokens do not stand alone but are connected through syntactic and semantic relationships. Modern search engines take this characteristic also into account. For any given query the relevant documents and the order in that they are represented will change depending on the order of the input query tokens. The user therefore can make active use of query segmentation while searching the web. The most popular method is the usage of quotation marks to force search engines to prioritize a given segmentation. This way, instead of letting the retrieval system guess which segmentation is correct, the user can provide the ground truth within the query. In reality, the majority of the users do not use this feature, making query segmentation an important part of query understanding in general. Applications of segmentation include faster retrieval of relevant documents and filtering out irrelevant results for the actual query. Additionally, there are advanced techniques like query substitution and query expansion that can help improve retrieval effectiveness - techniques that are very important for query understanding but not in scope for this paper. The process of query segmentation by \citeauthor{Bergsma:2007} is implemented using a data-driven, supervised machine learning model, where the segmentation itself is treated as a classification task for each potential split point in the token sequence. This is a new and modern approach to the classic feaute-based approaches like the connexity score computation by \citet{Risvik:2003}.
@@ -51,13 +51,10 @@ To stay consistent with the metrics, they defined single breakpoint segmentation
 \input{table-segmentation-performance-bergsma-2007}
 
 \paragraph*{Results}
-As seen in Table \ref{table-segmentation-performance-bergsma-2007}, the model outperformed baselines:
+To compare the accuracy, the author defined three baselines:
 \begin{enumerate}
 \item[1)] Naive Baseline 1 (always split): 44.8\% Seg-Acc, 4.2\% Qry-Acc.
 \item[2)] Naive Baseline 2 (never split): 55.2\% Seg-Acc, 4.0\% Qry-Acc.
 \item[3)] State-of-the-Art Baseline (MI): 68\% Seg-Acc, 26.6\% Qry-Acc.
 \end{enumerate}
-By optimizing feature weights through SVMs, our method achieved significant improvements, despite the moderate inter-annotator agreement in ground truth.
-
-\paragraph*{Conclusion}
-This study demonstrated the efficacy of a data-driven supervised approach to query segmentation. By leveraging discriminative features and context-aware models, the proposed method surpasses traditional MI-based baselines, enhancing search relevance and efficiency. Future work will explore deeper semantic representations and scaling for larger datasets.
+While the first two baselines were naive approaches that e.g. always split at any breakpoint, the third baseline split based on the mutual information that was defined earlier. This baseline can also found in Table \ref{table-segmentation-performance-bergsma-2007}. The results show, that especially the use of context features improved the accuracy significant. While the dependecy features most of the time increased the accuracy too, they in some cases also decreased Qry-Acc.
