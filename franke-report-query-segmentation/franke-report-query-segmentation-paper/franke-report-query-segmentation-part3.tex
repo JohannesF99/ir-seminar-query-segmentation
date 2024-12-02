@@ -1,9 +1,5 @@
 \section{segmentation classification using SVMs} \label{approach2}
 
-\input{table-indicator-features-bergsma-2007}
-\input{table-statistical-features-bergsma-2007}
-\input{table-segmentation-performance-bergsma-2007}
-
 \paragraph*{Introduction}
 After the discussion on the early segmentation approach using connexity scores defined by \citeauthor{Risvik:2003}, this chapter is used to introduce yet another approach for query segmentation by \citeauthor{Bergsma:2007}. Similar to \citeauthor{Risvik:2003}, \citeauthor{Bergsma:2007} start with the definition of query interpretation in general. When a query, defined as a sequence of tokens, is put into a search engine, it undergoes the known process of interpretation and document retrieval, often resulting in documents relevant to the topics but containing additional unrelated words. The user input is often expressed in natural language. Because of that, the query tokens do not stand alone but are connected through syntactic and semantic relationships. Modern search engines take this characteristic also into account. For any given query the relevant documents and the order in that they are represented will change depending on the order of the input query tokens. The user therefore can make active use of query segmentation while searching the web. The most popular method is the usage of quotation marks to force search engines to prioritize a given segmentation. This way, instead of letting the retrieval system guess which segmentation is correct, the user can provide the ground truth within the query. In reality, the majority of the users do not use this feature, making query segmentation an important part of query understanding in general. Applications of segmentation include faster retrieval of relevant documents and filtering out irrelevant results for the actual query. Additionally, there are advanced techniques like query substitution and query expansion that can help improve retrieval effectiveness - techniques that are very important for query understanding but not in scope for this paper. The process of query segmentation by \citeauthor{Bergsma:2007} is implemented using a data-driven, supervised machine learning model, where the segmentation itself is treated as a classification task for each potential split point in the token sequence. This is a new and modern approach to the classic feaute-based approaches like the connexity score computation by \citet{Risvik:2003}.
 
@@ -26,26 +22,33 @@ As before mentioned, the SVM is trained for every query $x$ and corresponding gr
 \end{align*}
 with $L,R$ describing the position and distance of the word relative to the breakpoint.
 The naive implementation for this task would only consider the features for the words left and right from the breakpoint. \citeauthor{Bergsma:2007} improved this version to include features for all words within a given window. This window is called \textit{decision boundary}. The size of these boundaries was set empiricistically to three.
-They also differentiate between \textit{decision bound-} and \textit{context-}features. While decision bound features only include features for the corresponding left and right tokens of a breakpoint, context features take the surrounding tokens of the decision boundary into account.
+They also differentiate between decision boundary and context features. While decision boundary features only include features for the corresponding left and right tokens of a breakpoint, context features take the most tokens of the window into account.
 
-Decision bound features are again split up into 2 groups, indicator features and statistical features. As seen in \ref{table-indicator-features-bergsma-2007}, the authors used Part-of-Speech (POS) tagging as well as the position of the token as indicator features. Some unusual features are the \textit{is-free} and \textit{is-the} features. Those are included because these words in many cases introduce or finish segments and therefore inpove accuracy.
-Statistical features are shown in \ref{table-statistical-features-bergsma-2007} and use mutual information (MI) similar to \citeauthor{Risvik:2003}. They additionally add some background to the computation of the MI score: For $x_{L0},x_{R0}$, the $MI$-value computes with
+\input{table-indicator-features-bergsma-2007}
+
+Decision boundary features are again split up into 2 groups, indicator features and statistical features. As seen in \ref{table-indicator-features-bergsma-2007}, the authors used Part-of-Speech (POS) tagging as well as the position of the token as indicator features. Some unusual features are the \textit{is-free} and \textit{is-the} features. The authors included these two features because in many cases the words "free" and "the" introduce or finish segments and therefore improve segmentation accuracy.
+
+\input{table-statistical-features-bergsma-2007}
+
+Statistical features are shown in \ref{table-statistical-features-bergsma-2007} and use mutual information (MI)\footnote{\todo{short explaination mutual information}} similar to \citeauthor{Risvik:2003}. They additionally add some background to the computation of the MI score that lacks the original paper. For $x_{L0},x_{R0}$, the $MI$-value computes with
 \begin{align*}
 MI &= \log \frac{Pr(x_{L0}x_{R0})}{Pr(x_{L0}) \cdot Pr(x_{R0})} \\
 &\Leftrightarrow \log C(x_{L0}x_{R0}) + \log K - \log C(x_{L0}) - \log C(x_{R0}).
 \end{align*}
-As seen in the equation, instead of the usual proximity metric, they adapted to metrics that are common in information retrieval. The mutual information for two token $x_{L0},x_{R0}$ depends on the number of all documents $K$ in the corpora and the number of documents where certain token appear $C$.
-\todo{short explaination mutual information}
+As seen in the equation, instead of the usual proximity metric, they adapted to metrics that are common in information retrieval. The mutual information for two token $x_{L0},x_{R0}$ depends on the number of all documents $K$ in the corpora and the number of documents $C$ where certain token appear.
 Other statistical features include web-counts of single token or token pairs.
 
-\todo{context features}\\
-\todo{dependency features}
+In addition to the described decision boundary features, context features also consider token $x_{L1}, x_{L2}$ and $x_{R1}, x_{R2}$. As the name suggests, the main advantage of context features is the use of the surrounding segmentation decisions. Examples for context features are web- and query-counts for tri- and four-grams.
+
+In linguistic, there is always the possibility that one word impacts another word that is not it's neighbor. The authors use the example "female bus driver", where "female" references the "driver" rather than the "bus" and thous should be included in the segment. To cover these cases, pairwise counts for $x_{L0},x_{R1}$ and $x_{L1},x_{R0}$ were included as features. Experiments with bigger ranges where conducted, but did not improve effectiveness.
 
 \paragraph*{Experimental Setup}
-We used the AOL Search Query Log (Pass et al., 2006), focusing on queries associated with user clicks for reliable relevance signals. After filtering, the dataset included 1,500 queries (500 for each of training, validation, and testing). Ground truth was annotated manually, yielding moderate agreement ($\kappa=0.69$) and highlighting the challenge of query ambiguity.
+\citeauthor{Bergsma:2007} used the AOL Search Query Log \cite{Pass:2006}, focusing on queries associated with user clicks for reliable relevance signals. After filtering, the dataset included 1,500 queries (500 for each of training, validation, and testing). Ground truth was annotated manually, yielding moderate agreement ($\kappa=0.69$) and highlighting the challenge of query ambiguity.
 
 4.2 Evaluation
 Metrics included segmentation accuracy (Seg-Acc) and query-level accuracy (Qry-Acc). We employed McNemar's test with $p<0.05$ to assess significance.
+
+\input{table-segmentation-performance-bergsma-2007}
 
 \paragraph*{Results}
 As seen in Table \ref{table-segmentation-performance-bergsma-2007}, the model outperformed baselines:
