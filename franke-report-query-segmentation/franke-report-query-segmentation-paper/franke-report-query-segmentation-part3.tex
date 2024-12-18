@@ -41,14 +41,14 @@ Other statistical features include web-counts of single token or token pairs.
 
 In addition to the described decision boundary features, context features also consider token $x_{L1}, x_{L2}$ and $x_{R1}, x_{R2}$. As the name suggests, the main advantage of context features is the use of the surrounding segmentation decisions. Examples for context features are web- and query-counts for tri- and four-grams.
 
+\input{table-segmentation-performance-bergsma-2007}
+
 In linguistic, there is always the possibility that one word impacts another word that is not it's neighbor. The authors use the example "female bus driver", where "female" references the "driver" rather than the "bus" and thous should be included in the segment. To cover these cases, pairwise counts for $x_{L0},x_{R1}$ and $x_{L1},x_{R0}$ were included as so called "dependency features". Experiments with bigger ranges where conducted, but did not improve effectiveness.\\
 \\
 \citeauthor{Bergsma:2007} used a subset of the AOL Search Query Log \cite{Pass:2006} for their research. An entry of the corpus contains the query, an anonymous user-ID\footnote{experiments using the AOL Search Query Log have shown that the user-IDs are not as anonymous as they appear to be. In some experiments, it was possible to trace the informations gained through the queries back to an existing person.} and URL if the person clicked on any website after searching for the corresponding query.
 The authors then filtered the queries to only include entries where user clicks are present, have a query length of at least four, and contain adjectives in the query itself.
 \citeauthor{Bergsma:2007} used the classic train-, validation-, and test-sets with 500 queries each. For every entry they removed the punctuation and added POS-tags. For supervised learning some kind of ground truth or gold standard is neccesary, so they manually annotated every entry in the database. They used one annotator for the training- and validation-set and two additionally annotators for the test-set. The given task for the annotators was to derive an information need based on the infos given and segment the query according to this information need. They then compared the agreement of the annotators using the Kappa score $\kappa$. For single breakpoint segmentation they achieved $\kappa \approx 84.3\%$ and for complete query segmentation $\kappa \approx 59.2\%$\footnote{\todo{maybe describe kappa statistics here}}, resulting in overall worse agreement than initially expected by the authors.
 To stay consistent with the metrics, they defined single breakpoint segmentation as \textit{Seg-Acc} and complete query segmentation as \textit{Qry-Acc}. Additionally, they used McNemar's test\footnote{similar to student's t-test but commonly used for classification tasks} with $p<0.05$ to assess significance.
-
-\input{table-segmentation-performance-bergsma-2007}
 
 To compare the accuracy, the authors defined three baselines:\footnote{\todo{this should probably be a table for better readability}}
 \begin{enumerate}
