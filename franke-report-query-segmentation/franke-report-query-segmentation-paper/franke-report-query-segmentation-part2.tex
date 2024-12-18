@@ -1,40 +1,37 @@
 \section{connexity score segmentation} \label{approach1}
 
-\paragraph*{Introduction}
-When working with search engines, formulating a query is one of the few ways for the user to communicate his needs to the underlying retrieval system. Most of the time, the user has a basic grasp of his information needs but lacks the ability to properly describe it in a way that relevant documents can be found. In multiword queries or queries with ambiguous phrases, there are often groups of token - so called n-grams - that have more then one single meaning, making it really challenging for the retrieval system to specifiy which corresponds with the user's information need. Without any form of segmentation one needs to effectively guess what the user wants, which leads to the retrieval of irrelevant documents. 
+When working with search engines, formulating a query is one of the few ways for the user to communicate his needs to the underlying retrieval system. Most of the time, the user has a basic grasp of his information needs but lacks the ability to describe it in such a way that relevant documents can be effectively found. 
+
+In multiword queries or queries with ambiguous phrases, there are often groups of token - so called n-grams - that have more then one single meaning, making it challenging for the retrieval system to specifiy which meaning corresponds with the current user's information need. Without any form of segmentation, one needs to effectively guess what the user wants to know, which leads to the retrieval of more irrelevant documents. 
+
 There are ways to change the user's original query to improve the accuracy of the results like Named Entity Recognition, Stopword Removal or Stemming.
-These techniques identify entities like names and places, filter non-essential words and reduce words to ther corresponding base form, respectively. These are approaches for query rewriting, where query segmentation is also a part of.
+These techniques identify entities like names and places, filter non-essential words and reduce words to ther corresponding base form, respectively. They are commonly used in query rewriting, where query segmentation is a part of.
 
-A common starting point in many cases is a so called "leftmost" approach in query rewriting. Here, the algorithms iterate over the query from left to right and apply the changes if possible. This works well for most trivial queries but struggles with complex multiword queries. As an example, the query "new jersey messi" will be segmented in "new jersey" and "messi" instead of "new" and "jersey messi". While the semantic of the first segmentation suggest documents where Messi visited New Jersey, the second segmentation has an interest in jerseys from Messi that were newly released.
-These ambiguities lead to very different information needs, which should be avoided. To tackle this, \citeauthor{Risvik:2003} introduce a method called \textit{connexity}. Their approach uses data mining techniques on query logs and score computation to create segments in a fast and reliable way for meaningful phrases, improving accuracy and finding more relevant documents.
+A common starting point in many cases is a so called "leftmost" approach in query rewriting. Here, the algorithms iterate over the query from left to right and apply the changes if possible. This works well for most trivial queries but struggles with complex multiword queries. As an example, the query "new jersey messi" will be segmented in "new jersey" and "messi" instead of "new" and "jersey messi". While the semantic of the first segmentation suggest documents where Messi visited New Jersey, the second segmentation describes an interest in new football jerseys from Messi. These ambiguities lead to very different information needs, which should be avoided. 
 
-\paragraph*{Mining Logs and Corpora}
-As the name suggests, query logs are collections of real world user queries. The authors base their approach heavily on this corpus. They tried to identify meaningful phrases in multiword queries.
-They define a "meaningful sequence" $S = \{w_1,w_2,...,w_n\}$ as a sequence  $S$ of words $w$ that satisfies two characteristics:
+To tackle this, \citeauthor{Risvik:2003} introduce a method called \textit{connexity}. Their approach uses data mining techniques on query logs and score computation to create segments in a fast and reliable way for meaningful phrases with the goal of improving accuracy and finding more relevant documents. As the name suggests, query logs are collections of real world user queries. The authors based their approach heavily on the \textit{Alltheweb}\footnote{The authors worked at \textit{FAST Search \& Transfer} at the time, which was the company behind the search engine \url{alltheweb.com}} query logs. They tried to identify "meaningful phrases" in multiword queries, where a meaningful phrase is defined as a sequence $S = \{w_1,w_2,...,w_n\}$ of words $w$ that satisfies two characteristics:
 \begin{enumerate}
-\item[1.] $S$ appears frequently enough within the logs.
+\item[1.] $S$ appears frequently enough within the logs and
 \item[2.] $S$ has a high mutual information, indicating a strong relationship between the different words in the sequence.
 \end{enumerate}
 
-The measurement they introduce, connexity, can be computed by
+The measurement they introduce, connexity, is defined as
 \begin{align*}
-conn(S) &= freq(S) \cdot I(w_1...w_{n-1},w_2...w_n)
+conn(S) &= freq(S) \cdot MI(w_1...w_{n-1},w_2...w_n),
 \end{align*}
-where $freq(S)$ is the frequency of sequence $S$, and $I$ is the mutual information between terms in $S$ that appear next to each other.
+where $freq(S)$ is the frequency of sequence $S$, and $MI$ is the mutual information between terms in $S$ that appear next to each other.
 Generalized, a high connexity score detects n-grams that appear often together in the same context.
-
-The specific corpus used in this study is not clearly mentioned, but it likely comes from \texttt{Alltheweb.com}'s internal logs, managed by \textit{FAST Search \& Transfer}, a company that was later acquired by Microsoft. This holds especially when considering that access to large amounts of query logs is very rare and valueable, because large company usually don't release their own logs.
 
 \input{table-token-segments-risvik-2003}
 
-The original dataset had roughly 600 million entries, that got reduced to $\approx$ 105 million normalized entries. In this dataset $|S_{1234}| \approx 144 \cdot 10^6$ unique n-grams were found, as seen in Table \ref{table-token-segments-risvik-2003}.
+The original corpus had roughly 600 million entries, that got reduced to $\approx$ 105 million normalized entries. In this dataset $|S_{1234}| \approx 144 \cdot 10^6$ unique n-grams of size one to four were found, as seen in Table \ref{table-token-segments-risvik-2003}.
 
 \todo{maybe explain table here}
 
 To avoid scope creep, they reduced the dataset even further by applying two filter rules:
 \begin{enumerate}
-\item[1.] $freq(S) \ge 5$, with $S \in |S_{1234}|$
-\item[2.] $conn(S) > t$, with fixed threshold $t$
+\item[1.] $freq(S) \ge 5$, with $S \in |S_{1234}|$ and
+\item[2.] $conn(S) > t$, with fixed threshold $t$.
 \end{enumerate}
 
 The final dataset contained $|S'_{1234}| \approx 12.5 \cdot 10^6$ queries. 
@@ -42,10 +39,9 @@ To improve the retrieval speed, the segments and connexity scores were precomput
 
 Another sub-approach, that was also considered was using Mutual Information derived from document content rather than query logs, but the approach was not pursued further in the paper. The main focus remained on query-based mining for it's relevance to the user's information need.
 
-\paragraph*{Query Segmentation}
 After the computation of the connexity values, the segmentation process itself starts. This is achieved by the identification of all existing subsequences and their corresponding connexity scores. At the end of this process, every segmentation $segm(S)$ for a sequence $S$ consists of a number of non-overlapping segments, so that every token of the original query is represented in exactly one segment. For each segmentation, a score $score(segm(S))$ is calculated as:
 \begin{align*}
-score(segm(S)) &= \sum conn(S) \text{, with } S \in S'_{1234} \text{ and } |S| \ge 2
+score(segm(S)) &= \sum conn(S) \text{, with } S \in S'_{1234} \text{ and } |S| \ge 2.
 \end{align*}
 After the calculation of the segmentation scores, the individual scores can be ranked. In general, higher scores indicate segmentations with greater coherence. In their paper, \citeauthor{Risvik:2003} show this process for the query "msdn library visual studio". Their results are shown in Table \ref{table-connexity-score-risvik-2003}.
 
