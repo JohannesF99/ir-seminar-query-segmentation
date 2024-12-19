@@ -1,42 +1,31 @@
 name: Create LaTeX PDF
 
-on: 
-  workflow_dispatch: 
+on: workflow_dispatch 
 
 jobs:
-  Build:
-    runs-on: ubuntu-latest
+    Build:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+        steps:
+            - uses: actions/checkout@v2
 
-      - name: Set up LaTeX
-        uses: xu-cheng/latex-action@v2
-        with:
-          root_file: franke-report-query-segmentation/franke-report-query-segmentation-paper/franke-report-query-segmentation.tex
-          
-      - name: Ensure required files exist
-        run: |
-          # Check if the required file exists (adjust path as necessary)
-          if [ ! -f "franke-report-query-segmentation/franke-report-query-segmentation-paper/franke-report-query-segmentation-pre.tex" ]; then
-            echo "Missing required file: franke-report-query-segmentation-pre.tex"
-            exit 1
-          fi
+            - name: cd into directory
+              working-directory: ./franke-report-query-segmentation/franke-report-query-segmentation-paper/
+              run: echo $(pwd)
 
-      - name: Compile LaTeX Document
-        run: |
-          cd franke-report-query-segmentation/franke-report-query-segmentation-paper
-          latexmk -pdf franke-report-query-segmentation.tex
+            - name: Compile
+              uses: xu-cheng/latex-action@v2
+              with:
+                root_file: franke-report-query-segmentation.tex
 
-      - name: Generate release tag
-        run: echo "release_tag=Build_$(date +"%Y.%m.%d_%Hh%Mmin")" >> "$GITHUB_ENV"
+            - name: Generate release tag
+              run: echo "release_tag=Build_$(date +"%Y.%m.%d_%Hh%Mmin")" >> "$GITHUB_ENV"
 
-      - name: Release PDF
-        uses: softprops/action-gh-release@v1
-        with:
-          files: franke-report-query-segmentation.pdf
-          tag_name: ${{ env.release_tag }}
-        if: ${{ github.ref == 'refs/heads/main' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Release
+              uses: softprops/action-gh-release@v1
+              with:
+                files: franke-report-query-segmentation.pdf
+                tag_name: ${{ env.release_tag }}              
+              if: ${{ github.ref == 'refs/heads/main' }}
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
