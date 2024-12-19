@@ -3,7 +3,7 @@ name: Create LaTeX PDF
 on: workflow_dispatch 
 
 jobs:
-    Build:
+    build:
         runs-on: ubuntu-latest
 
         steps:
@@ -15,14 +15,31 @@ jobs:
                 working_directory: ./franke-report-query-segmentation/franke-report-query-segmentation-paper/
                 root_file: franke-report-query-segmentation.tex
 
-            - name: Generate release tag
-              run: echo "release_tag=Build_$(date +"%Y.%m.%d_%Hh%Mmin")" >> "$GITHUB_ENV"
+            #- name: Generate release tag
+            #  run: echo "release_tag=Build_$(date +"%Y.%m.%d_%Hh%Mmin")" >> "$GITHUB_ENV"
 
-            - name: Release
-              uses: softprops/action-gh-release@v1
+            #- name: Release
+            #  uses: softprops/action-gh-release@v1
+            #  with:
+            #    files: franke-report-query-segmentation.pdf
+            #    tag_name: ${{ env.release_tag }}              
+            #  if: ${{ github.ref == 'refs/heads/main' }}
+            #  env:
+            #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Upload static files as artifact
+              id: deployment
+              uses: actions/upload-pages-artifact@v3
               with:
-                files: franke-report-query-segmentation.pdf
-                tag_name: ${{ env.release_tag }}              
-              if: ${{ github.ref == 'refs/heads/main' }}
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                name: franke-report-query-segmentation.pdf
+                path: ./
+
+    deploy:
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+          - name: Deploy to GitHub Pages
+            id: deployment
+            uses: actions/deploy-pages@v4
