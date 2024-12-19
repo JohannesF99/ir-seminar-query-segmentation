@@ -9,13 +9,10 @@ jobs:
         steps:
             - uses: actions/checkout@v2
 
-            - name: cd into directory
-              working-directory: ./franke-report-query-segmentation/franke-report-query-segmentation-paper/
-              run: echo $(pwd)
-
             - name: Compile
               uses: xu-cheng/latex-action@v2
               with:
+                working-directory: ./franke-report-query-segmentation/franke-report-query-segmentation-paper/
                 root_file: franke-report-query-segmentation.tex
 
             - name: Generate release tag
