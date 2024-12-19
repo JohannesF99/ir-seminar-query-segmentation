@@ -7,6 +7,10 @@ permissions:
   pages: write
   contents: write
 
+env:
+  DIRECTORY: ./franke-report-query-segmentation/franke-report-query-segmentation-paper/
+  FILE_NAME: franke-report-query-segmentation
+
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -17,8 +21,8 @@ jobs:
             - name: Compile
               uses: xu-cheng/latex-action@v2
               with:
-                working_directory: ./franke-report-query-segmentation/franke-report-query-segmentation-paper/
-                root_file: franke-report-query-segmentation.tex
+                working_directory: ${{ env.DIRECTORY }}
+                root_file: ${{ env.FILE_NAME }}.tex
 
             - name: Generate release tag
               run: echo "release_tag=Build_$(date +"%Y.%m.%d_%Hh%Mmin")" >> "$GITHUB_ENV"
@@ -29,7 +33,7 @@ jobs:
             - name: Release
               uses: softprops/action-gh-release@v1
               with:
-                files: franke-report-query-segmentation.pdf
+                files: ${{ env.DIRECTORY }}/${{ env.FILE_NAME }}.pdf
                 tag_name: ${{ env.release_tag }}              
               if: ${{ github.ref == 'refs/heads/main' }}
               env:
