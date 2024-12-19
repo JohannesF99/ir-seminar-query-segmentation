@@ -12,7 +12,7 @@ jobs:
             - name: Compile
               uses: xu-cheng/latex-action@v2
               with:
-                working-directory: ./franke-report-query-segmentation/franke-report-query-segmentation-paper/
+                working_directory: ./franke-report-query-segmentation/franke-report-query-segmentation-paper/
                 root_file: franke-report-query-segmentation.tex
 
             - name: Generate release tag
