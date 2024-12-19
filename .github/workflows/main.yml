@@ -32,7 +32,7 @@ jobs:
             #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - name: Upload static files as artifact
               id: deployment
-              uses: actions/upload-pages-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                 name: franke-report-query-segmentation.pdf
                 path: ./
