@@ -1,16 +1,17 @@
-\title{Segmentation approaches using mutual information scores and supervised classification models}
-\subtitle{A Study on Query Segmentation Techniques.}         % Optional.
+\title{Query segmentation using mutual information scores and supervised classification models}
 
 \author{Johannes Franke}
 \affiliation{%
-    \institution{Friedrich-Schiller-Universität}
+    \institution{Friedrich-Schiller-Universität Jena}
     \city{Jena}
     \country{Germany}
 }
 \email{johannes.franke@uni-jena.de}
 
 \begin{abstract}
-This report explores query segmentation techniques aimed at enhancing query understanding and information retrieval effectiveness. It focuses on two distinct approaches: the connexity score method by \citet{Risvik:2003} and the Support Vector Machine (SVM)-based segmentation approach by \citet{Bergsma:2007}. The former utilizes mutual information and query log mining to identify meaningful n-grams, while the latter frames query segmentation as a supervised classification problem. By analyzing these methods, the study highlights the strengths and limitations of each approach, providing a comprehensive overview of their applicability to modern information retrieval pipelines.
+My paper sets the focus on query segmentation as one tool to address and improve query understanding and analysis using a score computation approach by \citet{Risvik:2003} as well as a SVM-based segmentation approach by \citet{Bergsma:2007}. 
+
+In order to give a well-rounded summary of this topic, two prominent approaches for improving query segmentation were selected. The first approach by \citet{Risvik:2003} was published in 2003 and introduces a measurement called \textit{connexity}, while the second approach was published in 2007 by \citet{Bergsma:2007} and treats segmentation as a classification task using support vector machines (SVMs). After an explanation on how the approaches work, the advantages and disadvantages of the approaches are discussed.
 \end{abstract}
 
 \keywords{Seminar IR, Winter term 2024/25, query segmentation, connexity, SVM}
